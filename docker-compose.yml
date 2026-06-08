@@ -17,6 +17,7 @@ services:
 
   spring:
     build: .
+    image: to-do-app-spring
     ports:
       - "8080:8080"
     depends_on:
@@ -30,4 +31,4 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
 
 volumes:
-  postgres:data:
+  postgres_data:
