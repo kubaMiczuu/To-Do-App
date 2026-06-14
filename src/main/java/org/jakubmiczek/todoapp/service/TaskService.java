@@ -2,6 +2,7 @@ package org.jakubmiczek.todoapp.service;
 
 import org.jakubmiczek.todoapp.dto.TaskRequest;
 import org.jakubmiczek.todoapp.dto.TaskResponse;
+import org.jakubmiczek.todoapp.exception.TaskDoesNotExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
 import org.jakubmiczek.todoapp.model.Task;
 import org.jakubmiczek.todoapp.model.TaskStatus;
@@ -11,7 +12,6 @@ import org.jakubmiczek.todoapp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -39,21 +39,23 @@ public class TaskService {
     }
 
     public void deleteTask(Long taskId) {
-        taskRepository.deleteById(taskId);
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskDoesNotExistException(taskId));
+        taskRepository.delete(task);
     }
 
-    public List<Task> getTaskByUserId(Long userId) {
-        return taskRepository.findByUser_UserId(userId);
+    public List<TaskResponse> getTaskByUserId(Long userId) {
+        List<Task> desiredTasks = taskRepository.findByUser_UserId(userId);
+        return mapTaskToTaskResponse(desiredTasks);
     }
 
     public List<TaskResponse> getTasksByStatusForUser(Long userId, TaskStatus taskStatus) {
-        List<Task> desiredTasks =  taskRepository.findByUser_UserIdAndStatus(userId, taskStatus);
+        List<Task> desiredTasks = taskRepository.findByUser_UserIdAndStatus(userId, taskStatus);
         return mapTaskToTaskResponse(desiredTasks);
     }
 
     public List<TaskResponse> getAllTasks() {
-        List<Task> allTasks = taskRepository.findAll();
-        return mapTaskToTaskResponse(allTasks);
+        return mapTaskToTaskResponse(taskRepository.findAll());
     }
 
     private List<TaskResponse> mapTaskToTaskResponse(List<Task> tasks) {
