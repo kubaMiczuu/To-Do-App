@@ -1,4 +1,4 @@
-package org.jakubmiczek.todoapp.model;
+package org.jakubmiczek.todoapp.entity;
 
 public enum TaskStatus {
     TODO, IN_PROGRESS, DONE

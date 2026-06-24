@@ -1,4 +1,4 @@
-package org.jakubmiczek.todoapp.model;
+package org.jakubmiczek.todoapp.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package org.jakubmiczek.todoapp.dto;
+package org.jakubmiczek.todoapp.controller.dto;
 
 public record UserResponse(Long id, String username) {
 }
