@@ -1,12 +1,13 @@
 package org.jakubmiczek.todoapp.service;
 
-import org.jakubmiczek.todoapp.dto.UserRequest;
-import org.jakubmiczek.todoapp.dto.UserResponse;
-import org.jakubmiczek.todoapp.dto.UserUpdateRequest;
+import org.jakubmiczek.todoapp.controller.dto.UserRequest;
+import org.jakubmiczek.todoapp.controller.dto.UserResponse;
+import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
 import org.jakubmiczek.todoapp.exception.UserAlreadyExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
-import org.jakubmiczek.todoapp.model.User;
+import org.jakubmiczek.todoapp.entity.User;
 import org.jakubmiczek.todoapp.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void addUser(UserRequest userRequest) {
@@ -29,7 +32,7 @@ public class UserService {
 
         User newUser = new User();
         newUser.setUsername(userRequest.username());
-        newUser.setPassword(userRequest.password());
+        newUser.setPassword(passwordEncoder.encode(userRequest.password()));
 
         userRepository.save(newUser);
     }
@@ -38,8 +41,13 @@ public class UserService {
         User user = userRepository.findById(userUpdateRequest.userId())
                 .orElseThrow(() -> new UserDoesNotExistException(userUpdateRequest.userId()));
 
+        Optional<User> existingUser = userRepository.findByUsername(userUpdateRequest.username());
+        if(existingUser.isPresent() && !existingUser.get().getUserId().equals(userUpdateRequest.userId())) {
+            throw new UserAlreadyExistException(userUpdateRequest.username());
+        }
+
         user.setUsername(userUpdateRequest.username());
-        user.setPassword(userUpdateRequest.password());
+        user.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
 
         userRepository.save(user);
     }
@@ -54,11 +62,8 @@ public class UserService {
     }
 
     private User getUserByUsername(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent()) {
-            return user.get();
-        }
-        throw new UserDoesNotExistException(username);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserDoesNotExistException(username));
     }
 
     private List<UserResponse> mapUserToUserResponse(List<User> users) {

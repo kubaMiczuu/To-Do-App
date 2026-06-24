@@ -1,6 +1,6 @@
 package org.jakubmiczek.todoapp.repository;
 
-import org.jakubmiczek.todoapp.model.User;
+import org.jakubmiczek.todoapp.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

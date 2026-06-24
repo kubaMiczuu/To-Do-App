@@ -1,12 +1,12 @@
 package org.jakubmiczek.todoapp.service;
 
-import org.jakubmiczek.todoapp.dto.TaskRequest;
-import org.jakubmiczek.todoapp.dto.TaskResponse;
+import org.jakubmiczek.todoapp.controller.dto.TaskRequest;
+import org.jakubmiczek.todoapp.controller.dto.TaskResponse;
 import org.jakubmiczek.todoapp.exception.TaskDoesNotExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
-import org.jakubmiczek.todoapp.model.Task;
-import org.jakubmiczek.todoapp.model.TaskStatus;
-import org.jakubmiczek.todoapp.model.User;
+import org.jakubmiczek.todoapp.entity.Task;
+import org.jakubmiczek.todoapp.entity.TaskStatus;
+import org.jakubmiczek.todoapp.entity.User;
 import org.jakubmiczek.todoapp.repository.TaskRepository;
 import org.jakubmiczek.todoapp.repository.UserRepository;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package org.jakubmiczek.todoapp.repository;
 
-import org.jakubmiczek.todoapp.model.Task;
-import org.jakubmiczek.todoapp.model.TaskStatus;
+import org.jakubmiczek.todoapp.entity.Task;
+import org.jakubmiczek.todoapp.entity.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

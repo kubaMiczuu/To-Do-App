@@ -7,7 +7,7 @@ CREATE TABLE tasks(
     task_id bigserial primary key,
     title varchar(50) not null,
     description varchar(200),
-    status varchar(20) not null check (status in ("TODO", "IN_PROGRESS", "DONE")),
+    status varchar(20) not null check (status in ('TODO', 'IN_PROGRESS', 'DONE')),
     user_id bigint not null,
     foreign key (user_id) references users(user_id) on delete cascade
 );
