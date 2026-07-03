@@ -19,6 +19,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(TaskAccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleTaskAccessDeniedException(TaskAccessDeniedException ex) {
+        ApiErrorResponse error = new ApiErrorResponse(HttpStatus.FORBIDDEN.value(), List.of(ex.getMessage()), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistException(UserAlreadyExistException ex) {
         ApiErrorResponse error = new ApiErrorResponse(HttpStatus.CONFLICT.value(), List.of(ex.getMessage()), LocalDateTime.now());
