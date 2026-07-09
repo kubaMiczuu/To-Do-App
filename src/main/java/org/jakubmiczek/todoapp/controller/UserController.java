@@ -3,14 +3,12 @@ package org.jakubmiczek.todoapp.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
-import org.jakubmiczek.todoapp.controller.dto.UserResponse;
 import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
 import org.jakubmiczek.todoapp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,13 +35,6 @@ class UserController {
         userService.deleteUser(username);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> allUsers = userService.findAll();
-
-        return ResponseEntity.status(HttpStatus.OK).body(allUsers);
     }
 
 }

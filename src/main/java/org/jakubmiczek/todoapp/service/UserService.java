@@ -1,7 +1,6 @@
 package org.jakubmiczek.todoapp.service;
 
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
-import org.jakubmiczek.todoapp.controller.dto.UserResponse;
 import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
 import org.jakubmiczek.todoapp.exception.UserAlreadyExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
@@ -10,7 +9,6 @@ import org.jakubmiczek.todoapp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,18 +55,14 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public List<UserResponse> findAll() {
-        return mapUserToUserResponse(userRepository.findAll());
-    }
-
     private User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserDoesNotExistException(username));
     }
-
-    private List<UserResponse> mapUserToUserResponse(List<User> users) {
-        return users.stream().map(user -> new UserResponse(
-                user.getUserId(), user.getUsername()
-        )).toList();
-    }
+//    gonna need this in the future:
+//    private List<UserResponse> mapUserToUserResponse(List<User> users) {
+//        return users.stream().map(user -> new UserResponse(
+//                user.getUserId(), user.getUsername()
+//        )).toList();
+//    }
 }

@@ -1,7 +1,6 @@
 package org.jakubmiczek.todoapp.service;
 
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
-import org.jakubmiczek.todoapp.controller.dto.UserResponse;
 import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
 import org.jakubmiczek.todoapp.entity.User;
 import org.jakubmiczek.todoapp.exception.UserAlreadyExistException;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -126,23 +124,5 @@ public class UserServiceTest {
         when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
         assertThatThrownBy(() -> userService.deleteUser("username"))
                 .isInstanceOf(UserDoesNotExistException.class);
-    }
-
-    @Test
-    void shouldReturnAllUsers() {
-        User user1 = new User();
-        user1.setUserId(1L);
-        user1.setUsername("username");
-        user1.setPassword("password");
-
-        User user2 = new User();
-        user2.setUserId(2L);
-        user2.setUsername("username2");
-        user2.setPassword("password2");
-
-        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
-        List<UserResponse> allUsers = userService.findAll();
-
-        assertThat(allUsers.size()).isEqualTo(2);
     }
 }
