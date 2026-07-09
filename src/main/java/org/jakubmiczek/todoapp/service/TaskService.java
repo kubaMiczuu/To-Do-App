@@ -14,7 +14,6 @@ import org.jakubmiczek.todoapp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -27,14 +26,14 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public void addTask(TaskRequest taskRequest) {
+    public void addTask(TaskRequest taskRequest, String currentUsername) {
         Task newTask = new Task();
         newTask.setTitle(taskRequest.title());
         newTask.setDescription(taskRequest.description());
         newTask.setStatus(TaskStatus.TODO);
 
-        User user = userRepository.findByUsername(taskRequest.username())
-                .orElseThrow(() -> new UserDoesNotExistException(taskRequest.username()));
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new UserDoesNotExistException(currentUsername));
 
         newTask.setUser(user);
 
@@ -62,18 +61,14 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public List<TaskResponse> getTaskByUserId(Long userId) {
-        List<Task> desiredTasks = taskRepository.findByUser_UserId(userId);
+    public List<TaskResponse> getTaskByUserId(String username) {
+        List<Task> desiredTasks = taskRepository.findByUser_Username(username);
         return mapTaskToTaskResponse(desiredTasks);
     }
 
-    public List<TaskResponse> getTasksByStatusForUser(Long userId, TaskStatus taskStatus) {
-        List<Task> desiredTasks = taskRepository.findByUser_UserIdAndStatus(userId, taskStatus);
+    public List<TaskResponse> getTasksByStatusForUser(String username, TaskStatus taskStatus) {
+        List<Task> desiredTasks = taskRepository.findByUser_UsernameAndStatus(username, taskStatus);
         return mapTaskToTaskResponse(desiredTasks);
-    }
-
-    public List<TaskResponse> getAllTasks() {
-        return mapTaskToTaskResponse(taskRepository.findAll());
     }
 
     private List<TaskResponse> mapTaskToTaskResponse(List<Task> tasks) {

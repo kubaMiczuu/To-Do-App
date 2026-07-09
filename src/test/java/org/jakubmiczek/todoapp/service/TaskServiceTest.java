@@ -45,10 +45,12 @@ public class TaskServiceTest {
         user.setUsername("username");
         user.setPassword("password");
 
-        TaskRequest taskRequest = new TaskRequest("task", "test task", "username");
+        TaskRequest taskRequest = new TaskRequest("task", "test task");
 
-        when(userRepository.findByUsername(taskRequest.username())).thenReturn(Optional.of(user));
-        taskService.addTask(taskRequest);
+        when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
+        String currentUsername = "username";
+
+        taskService.addTask(taskRequest, currentUsername);
 
         ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
 
@@ -63,7 +65,7 @@ public class TaskServiceTest {
     @Test
     void shouldThrowUserDoesNotExistExceptionWhenAddingTask() {
         when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> taskService.addTask(new TaskRequest("task", "test task", "username")))
+        assertThatThrownBy(() -> taskService.addTask(new TaskRequest("task", "test task"),"username"))
                 .isInstanceOf(UserDoesNotExistException.class);
     }
 
@@ -194,8 +196,8 @@ public class TaskServiceTest {
         task2.setDescription("test task");
         task2.setStatus(TaskStatus.TODO);
 
-        when(taskRepository.findByUser_UserId(1L)).thenReturn(List.of(task1));
-        List<TaskResponse> userTasks = taskService.getTaskByUserId(1L);
+        when(taskRepository.findByUser_Username("user")).thenReturn(List.of(task1));
+        List<TaskResponse> userTasks = taskService.getTaskByUserId("user");
 
         assertThat(userTasks.size()).isEqualTo(1);
     }
@@ -221,37 +223,10 @@ public class TaskServiceTest {
         task2.setStatus(TaskStatus.DONE);
         task2.setUser(user);
 
-        when(taskRepository.findByUser_UserIdAndStatus(1L, TaskStatus.DONE)).thenReturn(List.of(task2));
-        List<TaskResponse> userTasks = taskService.getTasksByStatusForUser(1L, TaskStatus.DONE);
+        when(taskRepository.findByUser_UsernameAndStatus("user", TaskStatus.DONE)).thenReturn(List.of(task2));
+        List<TaskResponse> userTasks = taskService.getTasksByStatusForUser("user", TaskStatus.DONE);
 
         assertThat(userTasks.size()).isEqualTo(1);
-    }
-
-    @Test
-    void shouldReturnAllTasks() {
-        User user = new User();
-        user.setUserId(1L);
-        user.setUsername("user");
-        user.setPassword("password");
-
-        Task task1 = new Task();
-        task1.setTaskId(1L);
-        task1.setTitle("task");
-        task1.setDescription("test task");
-        task1.setStatus(TaskStatus.TODO);
-        task1.setUser(user);
-
-        Task task2 = new Task();
-        task2.setTaskId(2L);
-        task2.setTitle("task");
-        task2.setDescription("test task");
-        task2.setStatus(TaskStatus.DONE);
-        task2.setUser(user);
-
-        when(taskRepository.findAll()).thenReturn(List.of(task1, task2));
-        List<TaskResponse> userTasks = taskService.getAllTasks();
-
-        assertThat(userTasks.size()).isEqualTo(2);
     }
 
 }
