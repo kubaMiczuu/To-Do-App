@@ -1,5 +1,6 @@
 package org.jakubmiczek.todoapp.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
 import org.jakubmiczek.todoapp.service.JwtService;
@@ -25,13 +26,14 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserRequest userRequest) {
         userService.addUser(userRequest);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserRequest userRequest) {
         UsernamePasswordAuthenticationToken token =  new UsernamePasswordAuthenticationToken(userRequest.username(), userRequest.password());
 
         if(authenticationManager.authenticate(token).isAuthenticated()) {
