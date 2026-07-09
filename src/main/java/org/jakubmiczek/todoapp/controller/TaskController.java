@@ -7,12 +7,13 @@ import org.jakubmiczek.todoapp.controller.dto.TaskResponse;
 import org.jakubmiczek.todoapp.controller.dto.TaskUpdateRequest;
 import org.jakubmiczek.todoapp.entity.TaskStatus;
 import org.jakubmiczek.todoapp.service.TaskService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,12 +43,12 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getTasksByAccount(Principal principal) {
-        return ResponseEntity.ok(taskService.getTaskByUserId(principal.getName()));
+    public ResponseEntity<Page<TaskResponse>> getTasksByAccount(Principal principal, Pageable pageable) {
+        return ResponseEntity.ok(taskService.getTaskByUsername(principal.getName(), pageable));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<TaskResponse>> getTasksByAccountAndStatus(@PathVariable TaskStatus status,  Principal principal) {
-        return ResponseEntity.ok(taskService.getTasksByStatusForUser(principal.getName(), status));
+    public ResponseEntity<Page<TaskResponse>> getTasksByAccountAndStatus(@PathVariable TaskStatus status, Principal principal, Pageable pageable) {
+        return ResponseEntity.ok(taskService.getTasksByStatusForUser(principal.getName(), status, pageable));
     }
 }

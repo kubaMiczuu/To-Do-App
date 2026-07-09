@@ -11,9 +11,10 @@ import org.jakubmiczek.todoapp.entity.TaskStatus;
 import org.jakubmiczek.todoapp.entity.User;
 import org.jakubmiczek.todoapp.repository.TaskRepository;
 import org.jakubmiczek.todoapp.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class TaskService {
@@ -61,19 +62,19 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public List<TaskResponse> getTaskByUserId(String username) {
-        List<Task> desiredTasks = taskRepository.findByUser_Username(username);
+    public Page<TaskResponse> getTaskByUsername(String username, Pageable  pageable) {
+        Page<Task> desiredTasks = taskRepository.findByUser_Username(username, pageable);
         return mapTaskToTaskResponse(desiredTasks);
     }
 
-    public List<TaskResponse> getTasksByStatusForUser(String username, TaskStatus taskStatus) {
-        List<Task> desiredTasks = taskRepository.findByUser_UsernameAndStatus(username, taskStatus);
+    public Page<TaskResponse> getTasksByStatusForUser(String username, TaskStatus taskStatus, Pageable pageable) {
+        Page<Task> desiredTasks = taskRepository.findByUser_UsernameAndStatus(username, taskStatus, pageable);
         return mapTaskToTaskResponse(desiredTasks);
     }
 
-    private List<TaskResponse> mapTaskToTaskResponse(List<Task> tasks) {
-        return tasks.stream().map(task -> new TaskResponse(
-                task.getTaskId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getUser().getUsername()
-        )).toList();
+    private Page<TaskResponse> mapTaskToTaskResponse(Page<Task> tasks) {
+        return tasks.map(task -> new TaskResponse(
+                task.getTaskId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getUser().getUsername())
+        );
     }
 }

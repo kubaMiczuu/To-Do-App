@@ -17,6 +17,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -196,10 +200,14 @@ public class TaskServiceTest {
         task2.setDescription("test task");
         task2.setStatus(TaskStatus.TODO);
 
-        when(taskRepository.findByUser_Username("user")).thenReturn(List.of(task1));
-        List<TaskResponse> userTasks = taskService.getTaskByUserId("user");
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Task> pagedTasks = new PageImpl<>(List.of(task1), pageable, 1);
 
-        assertThat(userTasks.size()).isEqualTo(1);
+        when(taskRepository.findByUser_Username("user", pageable)).thenReturn(pagedTasks);
+        Page<TaskResponse> userTasks = taskService.getTaskByUsername("user", pageable);
+
+        assertThat(userTasks.getContent().size()).isEqualTo(1);
+        assertThat(userTasks.getContent().getFirst().title()).isEqualTo("task");
     }
 
     @Test
@@ -223,10 +231,14 @@ public class TaskServiceTest {
         task2.setStatus(TaskStatus.DONE);
         task2.setUser(user);
 
-        when(taskRepository.findByUser_UsernameAndStatus("user", TaskStatus.DONE)).thenReturn(List.of(task2));
-        List<TaskResponse> userTasks = taskService.getTasksByStatusForUser("user", TaskStatus.DONE);
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Task> pagedTasks = new PageImpl<>(List.of(task1), pageable, 1);
 
-        assertThat(userTasks.size()).isEqualTo(1);
+        when(taskRepository.findByUser_UsernameAndStatus("user", TaskStatus.DONE, pageable)).thenReturn(pagedTasks);
+        Page<TaskResponse> userTasks = taskService.getTasksByStatusForUser("user", TaskStatus.DONE, pageable);
+
+        assertThat(userTasks.getContent().size()).isEqualTo(1);
+        assertThat(userTasks.getContent().getFirst().title()).isEqualTo("task");
     }
 
 }
