@@ -13,7 +13,7 @@ function App() {
 
               <div className={`flex items-center justify-between max-w-6xl mx-auto`}>
 
-                  <span onClick={() => navigate("/")}
+                  <span onClick={() => navigate(isLoggedIn ? '/dashboard' : '/')}
                         className={`font-bold text-xl text-sky-400 tracking-tight hover:text-sky-500 hover:scale-105 transition cursor-pointer`}
                   >To-Do App</span>
 
