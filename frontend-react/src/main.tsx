@@ -7,6 +7,9 @@ import LandingPage from "./pages/LandingPage.tsx";
 import Dashboard from './pages/Dashboard.tsx'
 import AuthPage from "./pages/AuthPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
+import {AuthProvider} from "./context/AuthContext.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import GuestRoute from "./components/GuestRoute.tsx";
 
 const router = createBrowserRouter([
     {
@@ -15,23 +18,38 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/',
-                element: <LandingPage />
+                element:
+                    <GuestRoute>
+                        <LandingPage />
+                    </GuestRoute>
             },
             {
                 path: '/dashboard',
-                element: <Dashboard />
+                element:
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
             },
             {
                 path: '/login',
-                element: <AuthPage mode={'login'} />
+                element:
+                    <GuestRoute>
+                        <AuthPage mode={'login'} />
+                    </GuestRoute>
             },
             {
                 path: '/register',
-                element: <AuthPage mode={'register'} />
+                element:
+                    <GuestRoute>
+                        <AuthPage mode={'register'} />
+                    </GuestRoute>
             },
             {
                 path: '/profile',
-                element: <ProfilePage />
+                element:
+                    <ProtectedRoute>
+                        <ProfilePage />
+                    </ProtectedRoute>
             }
         ]
     }
@@ -39,6 +57,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
   </StrictMode>,
 )

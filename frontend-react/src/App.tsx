@@ -1,10 +1,10 @@
 import {Outlet, useNavigate} from 'react-router-dom'
-import {useState} from "react";
+import {useContext} from "react";
+import {AuthContext} from "./context/AuthContext.tsx";
 
 function App() {
     const navigate = useNavigate()
-
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+    const {isAuthenticated, logout} = useContext(AuthContext);
 
   return (
       <div className={`w-full h-screen bg-slate-50 text-slate-800 antialiased`}>
@@ -13,11 +13,11 @@ function App() {
 
               <div className={`flex items-center justify-between max-w-6xl mx-auto`}>
 
-                  <span onClick={() => navigate(isLoggedIn ? '/dashboard' : '/')}
+                  <span onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}
                         className={`font-bold text-2xl text-sky-400 tracking-tight hover:text-sky-500 hover:scale-105 transition cursor-pointer`}
                   >To-Do App</span>
 
-                  {!isLoggedIn ? (
+                  {!isAuthenticated ? (
                       <div className={`flex items-center gap-4`}>
 
                           <span onClick={() => navigate("/login")}
@@ -36,7 +36,10 @@ function App() {
                                 className={`text-sm font-medium hover:text-slate-900 cursor-pointer transition`}
                           >My Profile</span>
 
-                          <span onClick={() => setIsLoggedIn(false)}
+                          <span onClick={() => {
+                              logout()
+                              navigate("/login")}
+                          }
                                 className={`text-sm font-medium text-white bg-rose-400 hover:bg-rose-500 hover:scale-105 px-4 py-2 rounded-lg transition cursor-pointer`}
                           >Log out</span>
 

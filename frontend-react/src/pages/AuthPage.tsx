@@ -2,6 +2,9 @@ import {registerSchema, loginSchema} from "./authSchema.ts";
 import type {AuthFormData} from "./authSchema.ts";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useContext} from "react";
+import {AuthContext} from "../context/AuthContext.tsx";
+import {useNavigate} from "react-router-dom";
 
 interface AuthPageProps {
     mode: 'register' | 'login'
@@ -10,6 +13,8 @@ interface AuthPageProps {
 const AuthPage = ({ mode }: AuthPageProps) => {
 
     const currentSchema = mode === 'register' ? registerSchema : loginSchema;
+    const {login} = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const {register, handleSubmit, formState: {errors}} = useForm<AuthFormData>({
         resolver: zodResolver(currentSchema),
@@ -19,7 +24,8 @@ const AuthPage = ({ mode }: AuthPageProps) => {
     const onSubmit = async (data: AuthFormData) => {
         try {
             if (mode === 'login') {
-                console.log("Sending login to API:", data);
+                login();
+                navigate("/dashboard");
             } else {
                 console.log("Sending register to API:", data);
             }
