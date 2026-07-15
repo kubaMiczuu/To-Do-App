@@ -66,6 +66,23 @@ const AuthPage = ({ mode }: AuthPageProps) => {
                         </button>
                     </div>
 
+                    <p className={`text-slate-500 text-sm text-center mt-4`}>
+                        {mode === 'login'
+                            ? (
+                                <>
+                                You do not have any account yet?{' '}
+                                <span onClick={() => navigate("/register")} className={`text-slate-700 underline cursor-pointer hover:scale-105 hover:text-slate-800 transition`}>Create one now!</span>
+                                </>
+                            )
+                            : (
+                                <>
+                                Already have an account?{' '}
+                                <span onClick={() => navigate("/login")} className={`text-slate-700 underline cursor-pointer hover:scale-105 hover:text-slate-800 transition`}>Log in here!</span>
+                            </>
+                            )
+                        }
+                    </p>
+
                 </form>
 
             </div>

@@ -17,7 +17,7 @@ const LandingPage = () => {
                     Try it out now!
                 </button>
 
-                <h2 className={`font-bold text-3xl text-slate-800`}>Why should you use such a to-do app?</h2>
+                <h2 className={`font-bold text-3xl text-slate-800 mb-4`}>Why should you use such a to-do app?</h2>
                 <h3 className={`font-medium text-xl text-slate-600 mb-12`}>Let me explain the 3-S!</h3>
 
                 <div className={`grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-8 justify-items-center items-center`}>
