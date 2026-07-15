@@ -9,12 +9,12 @@ function App() {
   return (
       <div className={`w-full h-screen bg-slate-50 text-slate-800 antialiased`}>
 
-          <nav className={`sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm shadow-slate-100/40 px-6 py-4`}>
+          <nav className={`sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm shadow-slate-200/40 px-6 py-4`}>
 
               <div className={`flex items-center justify-between max-w-6xl mx-auto`}>
 
                   <span onClick={() => navigate(isLoggedIn ? '/dashboard' : '/')}
-                        className={`font-bold text-xl text-sky-400 tracking-tight hover:text-sky-500 hover:scale-105 transition cursor-pointer`}
+                        className={`font-bold text-2xl text-sky-400 tracking-tight hover:text-sky-500 hover:scale-105 transition cursor-pointer`}
                   >To-Do App</span>
 
                   {!isLoggedIn ? (
