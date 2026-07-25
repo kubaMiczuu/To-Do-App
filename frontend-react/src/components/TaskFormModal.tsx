@@ -119,7 +119,7 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
                     {showDeleteConfirm && (
                         <div className="absolute inset-0 z-10 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6">
                             <h2 className="text-4xl font-bold text-slate-800 mb-2">Are you sure?</h2>
-                            <p className="text-slate-500 mb-8 text-lg font-medium">This action cannot be undone. Task will be permanently deleted.</p>
+                            <p className="text-slate-500 mb-8 text-lg font-medium text-center">This action cannot be undone. Task will be permanently deleted.</p>
 
                             <div className="flex gap-4 w-full justify-center">
                                 <button
