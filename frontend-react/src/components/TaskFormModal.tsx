@@ -46,14 +46,16 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
                     {config.headerText}
                 </h1>
 
-                <div className={`flex flex-col gap-4`}>
+                <div className={`flex flex-col gap-4 mt-4`}>
 
-                    <input type={"text"} placeholder={"Task title..."} value={title} onChange={(e) => setTitle(e.target.value)}
-                            className={`text-slate-800 px-4 py-2 rounded-xl focus:outline-none transition duration-200 border border-slate-100`}
+                    <input placeholder="Task title..." value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="w-full text-lg md:text-xl font-semibold text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
                     />
 
-                    <textarea placeholder={"Task description..."} value={description} onChange={(e) => setDescription(e.target.value)}
-                            className={`text-slate-800 px-4 py-2 rounded-xl focus:outline-none transition duration-200 border border-slate-100 min-h-[50vh]`}
+                    <textarea placeholder="Task description..." value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="w-full text-base md:text-lg text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 min-h-[35vh] md:min-h-[45vh] lg:min-h-[50vh] resize-y focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
                     />
 
                     {mode === "UPDATE" && (
@@ -88,7 +90,7 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
 
                 </div>
 
-                <div className={`flex flex-col-reverse md:flex-row items-center gap-4 mt-16 w-full ${mode === "UPDATE" ? "justify-between" : "justify-center"}`}>
+                <div className={`flex flex-col-reverse md:flex-row items-center gap-4  mt-4 md:mt-16 w-full ${mode === "UPDATE" ? "justify-between" : "justify-center"}`}>
 
                     {mode === "UPDATE" && (
                         <button className="text-xl w-full md:w-auto px-6 py-2 text-rose-600 font-bold bg-rose-50 hover:bg-rose-100 hover:scale-105 rounded-lg transition cursor-pointer"
