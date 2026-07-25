@@ -1,5 +1,5 @@
-import {registerSchema, loginSchema} from "./authSchema.ts";
-import type {AuthFormData} from "./authSchema.ts";
+import {registerSchema, loginSchema} from "../schemas/authSchema.ts";
+import type {AuthFormData} from "../schemas/authSchema.ts";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useContext} from "react";
