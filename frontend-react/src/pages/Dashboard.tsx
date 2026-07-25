@@ -1,6 +1,36 @@
-import TaskCard from "../components/TaskCard.tsx";
+import TaskCard from "../components/TaskCard.tsx"
+import {useState} from "react"
+import TaskFormModal, {type TaskData} from "../components/TaskFormModal.tsx";
 
 const Dashboard = () => {
+
+    const [modalMode, setModalMode] = useState<null | "ADD" | "UPDATE">(null);
+    const [selectedTask, setSelectedTask] = useState<TaskData | null>(null);
+
+    const tasks: TaskData[] = [
+        {id: 1, title: "Task Title", description: "Task Description", status:"TODO"},
+        {id: 2, title: "Task Title", description: "Task Description", status:"IN_PROGRESS"},
+        {id: 3, title: "Task Title", description: "Task Description", status:"DONE"},
+        {id: 4, title: "Task Title", description: "Task Description", status:"TODO"},
+        {id: 5, title: "Task Title", description: "Task Description", status:"IN_PROGRESS"},
+        {id: 6, title: "Task Title", description: "Task Description", status:"DONE"},
+    ]
+
+    const handleUpdateClick = (task: TaskData) => {
+        setSelectedTask(task);
+        setModalMode("UPDATE");
+    }
+
+    const handleAddClick = () => {
+        setSelectedTask(null);
+        setModalMode("ADD");
+    }
+
+    const handleCancelClick = () => {
+        setSelectedTask(null);
+        setModalMode(null);
+    }
+
     return (
         <div className="flex justify-between px-4 cursor-default">
 
@@ -8,7 +38,7 @@ const Dashboard = () => {
 
                 <div className="flex flex-col md:flex-row justify-center mb-6 gap-4 p-4">
 
-                    <button onClick={() => {}} className="font-extrabold tracking-wider text-center w-full md:w-1/2 text-xl text-white bg-sky-400 hover:bg-sky-500 hover:scale-105 transition px-4 py-3 rounded-xl cursor-pointer">
+                    <button onClick={() => handleAddClick()} className="font-extrabold tracking-wider text-center w-full md:w-1/2 text-xl text-white bg-sky-400 hover:bg-sky-500 hover:scale-105 transition px-4 py-3 rounded-xl cursor-pointer">
                         Click me to add new task!
                     </button>
 
@@ -36,12 +66,11 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
-                    <TaskCard status="TODO" title="Task Title" description="Task Description" />
-                    <TaskCard status="IN_PROGRESS" title="Task Title" description="Task Description" />
-                    <TaskCard status="TODO" title="Task Title" description="Task Description"/>
-                    <TaskCard status="TODO" title="Task Title" description="Task Description" />
-                    <TaskCard status="DONE" title="Task Title" description="Task Description" />
-                    <TaskCard status="IN_PROGRESS" title="Task Title" description="Task Description" />
+                    {tasks.map((task: TaskData) => (
+                        <div key={task.id} onClick={() => handleUpdateClick(task)}>
+                            <TaskCard task={task}/>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="mt-4 border-2 border-dashed border-slate-300 rounded-xl p-4 flex items-center justify-center text-slate-400">
@@ -49,6 +78,10 @@ const Dashboard = () => {
                 </div>
 
             </div>
+
+            {modalMode !== null && (
+                <TaskFormModal mode={modalMode} initialData={selectedTask} onCancel={() => handleCancelClick()} />
+            )}
 
         </div>
     )

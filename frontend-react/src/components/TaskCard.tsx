@@ -1,7 +1,7 @@
+import type {TaskData} from "./TaskFormModal.tsx";
+
 interface TaskCardProps {
-    status: "TODO" | "IN_PROGRESS" | "DONE";
-    title: string;
-    description: string;
+    task: TaskData;
 }
 
 const statusConfig = {
@@ -22,24 +22,23 @@ const statusConfig = {
     }
 };
 
-const TaskCard = ({status, title, description}:TaskCardProps) => {
+const TaskCard = ({task}:TaskCardProps) => {
 
-    const config = statusConfig[status];
+    const config = statusConfig[task.status];
 
     return (
-        <div onClick={() => {}}
-            className={`h-full rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer ${config.border}`}>
+        <div className={`h-full rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer ${config.border}`}>
 
             <h2 className={`text-md font-bold tracking-wide ${config.text}`}>
                 {config.label}
             </h2>
 
             <h1 className={`text-xl text-center mt-2`}>
-                {title}
+                {task.title}
             </h1>
 
             <p className={`mt-4 line-clamp-4`}>
-                {description} A long description on whatever this task does with solid explanation and long long things to read just to fill the whole card place just to test
+                {task.description} A long description on whatever this task does with solid explanation and long long things to read just to fill the whole card place just to test
             </p>
 
         </div>
