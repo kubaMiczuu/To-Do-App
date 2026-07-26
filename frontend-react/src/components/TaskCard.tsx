@@ -27,7 +27,7 @@ const TaskCard = ({task}:TaskCardProps) => {
     const config = statusConfig[task.status];
 
     return (
-        <div className={`h-full rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer ${config.border}`}>
+        <article className={`h-full rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer ${config.border}`}>
 
             <h2 className={`text-md font-bold tracking-wide ${config.text}`}>
                 {config.label}
@@ -41,7 +41,7 @@ const TaskCard = ({task}:TaskCardProps) => {
                 {task.description} A long description on whatever this task does with solid explanation and long long things to read just to fill the whole card place just to test
             </p>
 
-        </div>
+        </article>
     )
 }
 export default TaskCard

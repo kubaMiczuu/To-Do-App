@@ -65,13 +65,13 @@ const Dashboard = () => {
 
                 </div>
 
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
+                <ul className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
                     {tasks.map((task: TaskData) => (
-                        <div key={task.id} onClick={() => handleUpdateClick(task)}>
+                        <li key={task.id} onClick={() => handleUpdateClick(task)}>
                             <TaskCard task={task}/>
-                        </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
 
                 <div className="mt-4 border-2 border-dashed border-slate-300 rounded-xl p-4 flex items-center justify-center text-slate-400">
                     Future pagination

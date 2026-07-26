@@ -45,7 +45,8 @@ const AuthPage = ({ mode }: AuthPageProps) => {
                 <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-4`}>
 
                     <div className={`flex flex-col gap-1`}>
-                        <input type={'text'} placeholder={'Username'} {...register('username')}
+                        <label htmlFor={'username'} className={`text-sm text-slate-700 font-bold`}>Username</label>
+                        <input id={'username'} type={'text'} placeholder={'Username...'} {...register('username')}
                         className={`text-slate-800 px-4 py-2 rounded-xl focus:outline-none transition duration-200 border border-slate-100 ${errors.username ? 'bg-rose-200 focus:bg-rose-200' : 'bg-white focus:bg-sky-50'}`}/>
                         {errors.username && (
                             <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.username.message}</p>
@@ -53,7 +54,8 @@ const AuthPage = ({ mode }: AuthPageProps) => {
                     </div>
 
                     <div className={`flex flex-col gap-1`}>
-                        <input type={'password'} placeholder={'Password'} {...register('password')}
+                        <label htmlFor={'password'} className={`text-sm text-slate-700 font-bold`}>Password</label>
+                        <input id={'password'} type={'password'} placeholder={'Password...'} {...register('password')}
                         className={`text-slate-800 px-4 py-2 rounded-xl focus:outline-none transition duration-200 border border-slate-100 ${errors.password ? 'bg-rose-200 focus:bg-rose-200' : 'bg-white focus:bg-sky-50'}`}/>
                         {errors.password && (
                             <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.password.message}</p>

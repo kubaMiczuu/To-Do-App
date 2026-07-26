@@ -61,21 +61,27 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
 
                 <div className={`flex flex-col gap-4 mt-4`}>
 
-                    <input placeholder="Task title..." value={title} {...register('title')}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="w-full text-lg md:text-xl font-semibold text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
-                    />
-                    {errors.title && (
-                        <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.title.message}</p>
-                    )}
+                    <div className={`flex flex-col gap-1`}>
+                        <label htmlFor={'title'} className={`text-md text-slate-700 font-bold`}>Title</label>
+                        <input id={'title'} placeholder="Task title..." value={title} {...register('title')}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full text-lg md:text-xl font-semibold text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
+                        />
+                        {errors.title && (
+                            <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.title.message}</p>
+                        )}
+                    </div>
 
-                    <textarea placeholder="Task description..." value={description} {...register('description')}
+                    <div className={`flex flex-col gap-1`}>
+                        <label htmlFor={'description'} className={`text-md text-slate-700 font-bold`}>Description</label>
+                        <textarea id={'description'} placeholder="Task description..." value={description} {...register('description')}
                         onChange={(e) => setDescription(e.target.value)}
                         className="w-full text-base md:text-lg text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 min-h-[35vh] md:min-h-[45vh] lg:min-h-[50vh] resize-y focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
-                    />
-                    {errors.description && (
-                        <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.description.message}</p>
-                    )}
+                        />
+                        {errors.description && (
+                            <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.description.message}</p>
+                        )}
+                    </div>
 
                     {mode === "UPDATE" && (
                         <div className={`flex gap-4 justify-center`}>
