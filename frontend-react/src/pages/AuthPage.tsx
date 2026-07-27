@@ -5,6 +5,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useContext} from "react";
 import {AuthContext} from "../context/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
+import InputField from "../components/common/InputField.tsx";
 
 interface AuthPageProps {
     mode: 'register' | 'login'
@@ -43,24 +44,10 @@ const AuthPage = ({ mode }: AuthPageProps) => {
                 </h2>
 
                 <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-4`}>
+                    
+                    <InputField id={'username'} label={'Username'} placeholder={'Enter username...'} register={register('username')} error={errors.username?.message}/>
 
-                    <div className={`flex flex-col gap-1`}>
-                        <label htmlFor={'username'} className={`text-sm text-slate-700 font-bold`}>Username</label>
-                        <input id={'username'} type={'text'} placeholder={'Username...'} {...register('username')}
-                        className={`text-slate-800 px-4 py-2 rounded-xl focus:outline-none transition duration-200 border border-slate-100 ${errors.username ? 'bg-rose-200 focus:bg-rose-200' : 'bg-white focus:bg-sky-50'}`}/>
-                        {errors.username && (
-                            <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.username.message}</p>
-                        )}
-                    </div>
-
-                    <div className={`flex flex-col gap-1`}>
-                        <label htmlFor={'password'} className={`text-sm text-slate-700 font-bold`}>Password</label>
-                        <input id={'password'} type={'password'} placeholder={'Password...'} {...register('password')}
-                        className={`text-slate-800 px-4 py-2 rounded-xl focus:outline-none transition duration-200 border border-slate-100 ${errors.password ? 'bg-rose-200 focus:bg-rose-200' : 'bg-white focus:bg-sky-50'}`}/>
-                        {errors.password && (
-                            <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.password.message}</p>
-                        )}
-                    </div>
+                    <InputField id={'password'} label={'Password'} placeholder={'Enter password...'} type={'password'} register={register('password')} error={errors.password?.message}/>
 
                     <div className={`flex flex-col items-center`}>
                         <button type="submit" className={`text-center w-3/4 mt-6 text-md font-bold text-white bg-sky-400 hover:bg-sky-500 hover:scale-105 transition px-4 py-2 rounded-xl cursor-pointer`}>

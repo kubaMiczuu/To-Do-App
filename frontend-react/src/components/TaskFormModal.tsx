@@ -1,8 +1,11 @@
 import {useState} from "react";
 import {taskSchema} from "../schemas/taskSchema.ts";
 import type {TaskFormData} from "../schemas/taskSchema.ts";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import Modal from "./common/Modal.tsx";
+import InputField from "./common/InputField.tsx";
+import TextAreaField from "./common/TextAreaField.tsx";
 
 interface TaskFormModalProps {
     mode: "UPDATE" | "ADD";
@@ -36,24 +39,31 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
 
     const config = modeConfig[mode];
 
-    const [title, setTitle] = useState(initialData?.title || "");
-    const [description, setDescription] = useState(initialData?.description || "");
-    const [status, setStatus] = useState(initialData?.status || "TODO");
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-    const {register, handleSubmit, formState: {errors}} = useForm<TaskFormData>({
+    const {control, register, handleSubmit, setValue, formState: {errors}} = useForm<TaskFormData>({
         resolver: zodResolver(taskSchema),
-        mode: "onTouched"
+        mode: "onTouched",
+        defaultValues: {
+            title: initialData?.title || "",
+            description: initialData?.description || "",
+            status: initialData?.status || "TODO"
+        }
     });
+
+    const currentStatus = useWatch({
+        control,
+        name: 'status'
+    })
 
     const handleFormSubmit = () => {
 
     }
 
     return (
-        <div onClick={() => onCancel()} className={`fixed inset-0 z-60 bg-slate-900/60 flex items-center justify-center`}>
+        <Modal onCancel={() => onCancel()}>
 
-            <form onSubmit={handleSubmit(handleFormSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full max-w-5xl min-h-[calc(100vh-128px)] bg-white border border-slate-100 shadow-sm shadow-slate-200/40 rounded-2xl p-6 relative overflow-hidden">
+            <form onSubmit={handleSubmit(handleFormSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]x`">
 
                 <h1 className={`text-center text-3xl font-bold text-slate-800`}>
                     {config.headerText}
@@ -61,49 +71,31 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
 
                 <div className={`flex flex-col gap-4 mt-4`}>
 
-                    <div className={`flex flex-col gap-1`}>
-                        <label htmlFor={'title'} className={`text-md text-slate-700 font-bold`}>Title</label>
-                        <input id={'title'} placeholder="Task title..." value={title} {...register('title')}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full text-lg md:text-xl font-semibold text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
-                        />
-                        {errors.title && (
-                            <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.title.message}</p>
-                        )}
-                    </div>
+                    <InputField id={'title'} label={'Title'} placeholder={'Enter title'} register={register('title')} error={errors.title?.message}/>
 
-                    <div className={`flex flex-col gap-1`}>
-                        <label htmlFor={'description'} className={`text-md text-slate-700 font-bold`}>Description</label>
-                        <textarea id={'description'} placeholder="Task description..." value={description} {...register('description')}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="w-full text-base md:text-lg text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 min-h-[35vh] md:min-h-[45vh] lg:min-h-[50vh] resize-y focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
-                        />
-                        {errors.description && (
-                            <p className={`text-xs font-medium text-rose-500 pl-1`}>{errors.description.message}</p>
-                        )}
-                    </div>
+                    <TextAreaField id={'description'} label={'Description'} placeholder={'Type something about this task...'} register={register('description')} error={errors.description?.message}/>
 
                     {mode === "UPDATE" && (
                         <div className={`flex gap-4 justify-center`}>
 
-                            {status !== "TODO" && (
-                                <button onClick={() => setStatus("TODO")} type={'button'}
+                            {currentStatus !== "TODO" && (
+                                <button onClick={() => setValue("status", "TODO")} type={'button'}
                                         className={`w-full md:w-1/2 border-slate-200 shadow-slate-200/40 hover:border-slate-300 rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer`}
                                 >
                                     Mark as <span className={`italic text-slate-400 font-bold tracking-wide`}>To Do</span>
                                 </button>
                             )}
 
-                            {status !== "IN_PROGRESS" && (
-                                <button onClick={() => setStatus("IN_PROGRESS")} type={'button'}
+                            {currentStatus !== "IN_PROGRESS" && (
+                                <button onClick={() => setValue("status", "IN_PROGRESS")} type={'button'}
                                         className={`w-full md:w-1/2 border-blue-200 shadow-blue-200/40 hover:border-blue-300 rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer`}
                                 >
                                     Mark as <span className={`italic text-blue-400 font-bold tracking-wide`}>In Progress</span>
                                 </button>
                             )}
 
-                            {status !== "DONE" && (
-                                <button onClick={() => setStatus("DONE")} type={'button'}
+                            {currentStatus !== "DONE" && (
+                                <button onClick={() => setValue("status", "DONE")} type={'button'}
                                         className={`w-full md:w-1/2 border-green-200 shadow-green-200/40 hover:border-green-300 rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer`}
                                 >
                                     Mark as <span className={`italic text-green-400 font-bold tracking-wide`}>Done</span>
@@ -169,7 +161,7 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
 
             </form>
 
-        </div>
+        </Modal>
     )
 }
 export default TaskFormModal

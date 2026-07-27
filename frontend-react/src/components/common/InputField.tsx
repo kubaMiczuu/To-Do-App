@@ -1,0 +1,32 @@
+import type {UseFormRegisterReturn} from "react-hook-form";
+
+interface InputFieldProps {
+    id: string
+    label: string
+    placeholder: string
+    type?: string
+    register: UseFormRegisterReturn
+    error?: string
+}
+
+const InputField = ({id, label, placeholder, type, register, error}: InputFieldProps) => {
+    return (
+        <div className={`flex flex-col gap-1`}>
+
+            <label htmlFor={id} className={`text-md text-slate-700 font-bold`}>
+                {label}
+            </label>
+
+            <input type={type} id={id} placeholder={placeholder} {...register}
+                   className="w-full text-lg md:text-xl font-semibold text-slate-800 px-4 py-3 md:px-5 md:py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400 transition duration-200"
+            />
+
+            {error && (
+                <p className={`text-xs font-medium text-rose-500 pl-1`}>{error}</p>
+            )}
+
+        </div>
+    )
+}
+
+export default InputField;
