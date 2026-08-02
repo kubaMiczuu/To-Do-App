@@ -6,6 +6,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import Modal from "./common/Modal.tsx";
 import InputField from "./common/InputField.tsx";
 import TextAreaField from "./common/TextAreaField.tsx";
+import DeleteConfirmOverlay from "./common/DeleteConfirmOverlay.tsx";
+import TaskStatusChangeButton from "./TaskStatusChangeButton.tsx";
 
 interface TaskFormModalProps {
     mode: "UPDATE" | "ADD";
@@ -60,10 +62,14 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
 
     }
 
+    const handleDeleteTask = async () => {
+
+    }
+
     return (
         <Modal onCancel={() => onCancel()}>
 
-            <form onSubmit={handleSubmit(handleFormSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]x`">
+            <form onSubmit={handleSubmit(handleFormSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]`">
 
                 <h1 className={`text-center text-3xl font-bold text-slate-800`}>
                     {config.headerText}
@@ -79,27 +85,15 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
                         <div className={`flex gap-4 justify-center`}>
 
                             {currentStatus !== "TODO" && (
-                                <button onClick={() => setValue("status", "TODO")} type={'button'}
-                                        className={`w-full md:w-1/2 border-slate-200 shadow-slate-200/40 hover:border-slate-300 rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer`}
-                                >
-                                    Mark as <span className={`italic text-slate-400 font-bold tracking-wide`}>To Do</span>
-                                </button>
+                                <TaskStatusChangeButton onValueChange={setValue} status={"TODO"} />
                             )}
 
                             {currentStatus !== "IN_PROGRESS" && (
-                                <button onClick={() => setValue("status", "IN_PROGRESS")} type={'button'}
-                                        className={`w-full md:w-1/2 border-blue-200 shadow-blue-200/40 hover:border-blue-300 rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer`}
-                                >
-                                    Mark as <span className={`italic text-blue-400 font-bold tracking-wide`}>In Progress</span>
-                                </button>
+                                <TaskStatusChangeButton onValueChange={setValue} status={"IN_PROGRESS"} />
                             )}
 
                             {currentStatus !== "DONE" && (
-                                <button onClick={() => setValue("status", "DONE")} type={'button'}
-                                        className={`w-full md:w-1/2 border-green-200 shadow-green-200/40 hover:border-green-300 rounded-xl border-2 p-3 shadow-lg hover:scale-105 transition cursor-pointer`}
-                                >
-                                    Mark as <span className={`italic text-green-400 font-bold tracking-wide`}>Done</span>
-                                </button>
+                                <TaskStatusChangeButton onValueChange={setValue} status={"DONE"} />
                             )}
 
                         </div>
@@ -134,28 +128,7 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
                     </div>
 
                     {showDeleteConfirm && (
-                        <div className="absolute inset-0 z-10 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6">
-                            <h2 className="text-4xl font-bold text-slate-800 mb-2">Are you sure?</h2>
-                            <p className="text-slate-500 mb-8 text-lg font-medium text-center">This action cannot be undone. Task will be permanently deleted.</p>
-
-                            <div className="flex gap-4 w-full justify-center">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowDeleteConfirm(false)}
-                                    className="px-6 py-3 text-slate-700 font-extrabold bg-slate-200 hover:bg-slate-300 hover:scale-105 rounded-lg transition cursor-pointer"
-                                >
-                                    No, keep it
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => {}}
-                                    className="px-8 py-3 text-white font-extrabold bg-rose-500 hover:bg-rose-600 hover:scale-105 rounded-lg transition cursor-pointer shadow-lg shadow-rose-500/30"
-                                >
-                                    Yes, delete task
-                                </button>
-                            </div>
-                        </div>
+                        <DeleteConfirmOverlay onCancel={setShowDeleteConfirm} onConfirm={handleDeleteTask} toDelete={"task"}/>
                     )}
                 </div>
 
