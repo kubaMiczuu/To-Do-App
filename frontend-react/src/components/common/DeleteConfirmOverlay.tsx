@@ -6,7 +6,7 @@ interface deleteConfirmOverlayProps {
 
 const DeleteConfirmOverlay = ({onCancel, onConfirm, toDelete}: deleteConfirmOverlayProps) => {
     return (
-        <div className="absolute inset-0 z-10 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6">
+        <div className="flex flex-col items-center justify-center p-6 w-full">
             <h2 className="text-4xl font-bold text-slate-800 mb-2">Are you sure?</h2>
             <p className="text-slate-500 mb-8 text-lg font-medium text-center">This action cannot be undone, {toDelete} will be permanently deleted.</p>
 
