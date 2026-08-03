@@ -1,6 +1,6 @@
 import {useForm} from "react-hook-form";
-import type {ChangePasswordSchema} from "../schemas/changePasswordSchema.ts";
-import {profileSchema} from "../schemas/changePasswordSchema.ts";
+import type {ProfileSchema} from "../schemas/profileSchema.ts";
+import {profileSchema} from "../schemas/profileSchema.ts";
 import {zodResolver} from "@hookform/resolvers/zod";
 import InputField from "./common/InputField.tsx";
 import ModalFooter from "./common/ModalFooter.tsx";
@@ -35,7 +35,7 @@ const modeConfig = {
 const ProfileFormModal = ({mode, initialData, onCancel}: ProfileFormModalProps) => {
     const config = modeConfig[mode];
 
-    const {register, handleSubmit, formState: {errors}} = useForm<ChangePasswordSchema>({
+    const {register, handleSubmit, formState: {errors}} = useForm<ProfileSchema>({
         resolver: zodResolver(profileSchema),
         mode: "onTouched",
         defaultValues: {

@@ -2,11 +2,11 @@ import {z} from 'zod'
 
 export const registerSchema = z.object({
     username: z.string()
-        .min(3, {message: 'username must be at least 3 characters'})
-        .max(20, {message: 'username must be at most 20 characters'}),
+        .min(3, {message: 'username must have at least 3 characters'})
+        .max(20, {message: 'username must have at most 20 characters'}),
 
     password: z.string()
-        .min(8, {message: 'password must be at least 8 characters'})
+        .min(8, {message: 'password must have at least 8 characters'})
 });
 
 export const loginSchema = z.object({
