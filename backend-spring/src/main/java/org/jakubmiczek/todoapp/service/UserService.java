@@ -1,6 +1,7 @@
 package org.jakubmiczek.todoapp.service;
 
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
+import org.jakubmiczek.todoapp.controller.dto.UserResponse;
 import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
 import org.jakubmiczek.todoapp.exception.UserAlreadyExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
@@ -55,14 +56,14 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public UserResponse getUserProfile(String username) {
+        User user = getUserByUsername(username);
+
+        return new UserResponse(user.getUserId(), user.getUsername());
+    }
+
     private User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserDoesNotExistException(username));
     }
-//    gonna need this in the future:
-//    private List<UserResponse> mapUserToUserResponse(List<User> users) {
-//        return users.stream().map(user -> new UserResponse(
-//                user.getUserId(), user.getUsername()
-//        )).toList();
-//    }
 }
