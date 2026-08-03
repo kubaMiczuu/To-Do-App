@@ -1,5 +1,7 @@
 package org.jakubmiczek.todoapp.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
@@ -33,16 +35,36 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserRequest userRequest) {
+    public ResponseEntity<Void> login(@Valid @RequestBody UserRequest userRequest, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken token =  new UsernamePasswordAuthenticationToken(userRequest.username(), userRequest.password());
 
         if(authenticationManager.authenticate(token).isAuthenticated()) {
             UserDetails user = userDetailsService.loadUserByUsername(userRequest.username());
 
-            return ResponseEntity.ok(jwtService.generateToken(user));
+            Cookie cookie = new Cookie("jwt_token", jwtService.generateToken(user));
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            //cookie.setSecure(true);
+            cookie.setMaxAge(24*60*60);
+
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("jwt_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
 }

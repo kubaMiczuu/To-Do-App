@@ -2,6 +2,7 @@ package org.jakubmiczek.todoapp.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -26,17 +28,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        String authorizationToken = null;
 
-            String token = authorizationHeader.substring(7);
-            String username = jwtService.extractUsername(token);
-            UserDetails user = userDetailsService.loadUserByUsername(username);
-
-            if(jwtService.validateToken(token, user)) {
-                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (Objects.equals(cookie.getName(), "jwt_token")) {
+                    authorizationToken = cookie.getValue();
+                    break;
+                }
             }
+        }
+
+        if (authorizationToken != null) {
+            String username = jwtService.extractUsername(authorizationToken);
+
+            if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails user = userDetailsService.loadUserByUsername(username);
+
+                if(jwtService.validateToken(authorizationToken, user)) {
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
+                    );
+                }
+            }
+
+
         }
 
         filterChain.doFilter(request, response);
