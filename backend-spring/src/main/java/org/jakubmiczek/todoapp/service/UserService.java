@@ -1,12 +1,13 @@
 package org.jakubmiczek.todoapp.service;
 
+import org.jakubmiczek.todoapp.controller.dto.UserPasswordUpdateRequest;
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
 import org.jakubmiczek.todoapp.controller.dto.UserResponse;
-import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
 import org.jakubmiczek.todoapp.exception.UserAlreadyExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
 import org.jakubmiczek.todoapp.entity.User;
 import org.jakubmiczek.todoapp.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,18 +37,26 @@ public class UserService {
         userRepository.save(newUser);
     }
 
-    public void updateUser(UserUpdateRequest userUpdateRequest) {
-        User user = userRepository.findById(userUpdateRequest.userId())
-                .orElseThrow(() -> new UserDoesNotExistException(userUpdateRequest.userId()));
+    public void updateUserInfo(String currentUsername, String newUsername) {
+        User user = getUserByUsername(currentUsername);
 
-        Optional<User> existingUser = userRepository.findByUsername(userUpdateRequest.username());
-        if(existingUser.isPresent() && !existingUser.get().getUserId().equals(userUpdateRequest.userId())) {
-            throw new UserAlreadyExistException(userUpdateRequest.username());
+        Optional<User> existingUser = userRepository.findByUsername(newUsername);
+        if(existingUser.isPresent() && !existingUser.get().getUserId().equals(user.getUserId())) {
+            throw new UserAlreadyExistException(newUsername);
         }
 
-        user.setUsername(userUpdateRequest.username());
-        user.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
+        user.setUsername(newUsername);
+        userRepository.save(user);
+    }
 
+    public void updatePassword(String currentUsername, UserPasswordUpdateRequest request) {
+        User user = getUserByUsername(currentUsername);
+
+        if(!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid old password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
     }
 

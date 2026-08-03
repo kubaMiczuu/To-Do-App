@@ -1,7 +1,8 @@
 package org.jakubmiczek.todoapp.service;
 
+import org.jakubmiczek.todoapp.controller.dto.UserPasswordUpdateRequest;
 import org.jakubmiczek.todoapp.controller.dto.UserRequest;
-import org.jakubmiczek.todoapp.controller.dto.UserUpdateRequest;
+import org.jakubmiczek.todoapp.controller.dto.UserResponse;
 import org.jakubmiczek.todoapp.entity.User;
 import org.jakubmiczek.todoapp.exception.UserAlreadyExistException;
 import org.jakubmiczek.todoapp.exception.UserDoesNotExistException;
@@ -12,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -40,6 +42,7 @@ public class UserServiceTest {
 
         when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userRequest.password())).thenReturn(encodedPassword);
+        
         userService.addUser(userRequest);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
@@ -54,7 +57,6 @@ public class UserServiceTest {
         User user = new User();
         user.setUserId(1L);
         user.setUsername("username");
-        user.setPassword("password");
 
         when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
 
@@ -63,47 +65,76 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldUpdateUserCorrectly() {
+    void shouldUpdateUserInfoCorrectly() {
         User user = new User();
         user.setUserId(1L);
-        user.setUsername("username");
-        user.setPassword("password");
+        user.setUsername("oldUsername");
 
-        UserUpdateRequest userRequest = new UserUpdateRequest(user.getUserId(), "user", "passw");
+        when(userRepository.findByUsername("oldUsername")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("newUsername")).thenReturn(Optional.empty());
 
-        String encodedPassword = "hashedPassword";
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(userRequest.password())).thenReturn(encodedPassword);
-        userService.updateUser(userRequest);
+        userService.updateUserInfo("oldUsername", "newUsername");
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(captor.capture());
 
-        assertThat(captor.getValue().getUsername()).isEqualTo("user");
-        assertThat(captor.getValue().getPassword()).isEqualTo(encodedPassword);
+        assertThat(captor.getValue().getUsername()).isEqualTo("newUsername");
     }
 
     @Test
-    void shouldThrowUserAlreadyExistsExceptionWhenUpdatingUser() {
-        User user1 = new User();
-        user1.setUserId(1L);
-        user1.setUsername("username");
-        user1.setPassword("password");
+    void shouldThrowUserAlreadyExistsExceptionWhenUpdatingUserInfoToTakenUsername() {
+        User currentUser = new User();
+        currentUser.setUserId(1L);
+        currentUser.setUsername("oldUsername");
 
-        User user2 = new User();
-        user2.setUserId(2L);
-        user2.setUsername("username2");
-        user2.setPassword("password2");
+        User otherUser = new User();
+        otherUser.setUserId(2L);
+        otherUser.setUsername("newUsername");
 
-        UserUpdateRequest userRequest = new UserUpdateRequest(2L, "username", "passw");
+        when(userRepository.findByUsername("oldUsername")).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByUsername("newUsername")).thenReturn(Optional.of(otherUser));
 
-        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
-        when(userRepository.findByUsername("username")).thenReturn(Optional.of(user1));
-
-        assertThatThrownBy(() -> userService.updateUser(userRequest))
+        assertThatThrownBy(() -> userService.updateUserInfo("oldUsername", "newUsername"))
                 .isInstanceOf(UserAlreadyExistException.class);
+    }
+
+    @Test
+    void shouldUpdatePasswordCorrectly() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("username");
+        user.setPassword("oldHashedPassword");
+
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest("oldRawPassword", "newRawPassword");
+        String newHashedPassword = "newHashedPassword";
+
+        when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(request.oldPassword(), user.getPassword())).thenReturn(true);
+        when(passwordEncoder.encode(request.newPassword())).thenReturn(newHashedPassword);
+
+        userService.updatePassword("username", request);
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+
+        assertThat(captor.getValue().getPassword()).isEqualTo(newHashedPassword);
+    }
+
+    @Test
+    void shouldThrowBadCredentialsExceptionWhenUpdatingPasswordWithWrongOldPassword() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("username");
+        user.setPassword("oldHashedPassword");
+
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest("wrongOldPassword", "newRawPassword");
+
+        when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(request.oldPassword(), user.getPassword())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.updatePassword("username", request))
+                .isInstanceOf(BadCredentialsException.class)
+                .hasMessage("Invalid old password");
     }
 
     @Test
@@ -111,7 +142,6 @@ public class UserServiceTest {
         User user = new User();
         user.setUserId(1L);
         user.setUsername("username");
-        user.setPassword("password");
 
         when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
         userService.deleteUser("username");
@@ -120,9 +150,22 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldThrowUserNotFoundExceptionWhenDeletingUser() {
+    void shouldThrowUserNotFoundExceptionWhenDeletingNonExistentUser() {
         when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
         assertThatThrownBy(() -> userService.deleteUser("username"))
                 .isInstanceOf(UserDoesNotExistException.class);
+    }
+
+    @Test
+    void shouldGetUserProfileCorrectly() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("username");
+
+        when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
+
+        UserResponse response = userService.getUserProfile("username");
+
+        assertThat(response.username()).isEqualTo("username");
     }
 }
