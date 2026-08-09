@@ -2,10 +2,12 @@ import {registerSchema, loginSchema} from "../schemas/authSchema.ts";
 import type {AuthFormData} from "../schemas/authSchema.ts";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useContext} from "react";
-import {AuthContext} from "../context/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import InputField from "../components/common/InputField.tsx";
+import {axiosClient} from "../api/axiosClient.ts";
+import {useContext} from "react";
+import {AuthContext} from "../context/AuthContext.tsx";
+import {isAxiosError} from "axios";
 
 interface AuthPageProps {
     mode: 'register' | 'login'
@@ -14,24 +16,39 @@ interface AuthPageProps {
 const AuthPage = ({ mode }: AuthPageProps) => {
 
     const currentSchema = mode === 'register' ? registerSchema : loginSchema;
-    const {login} = useContext(AuthContext);
     const navigate = useNavigate();
+    const {checkSession} = useContext(AuthContext);
 
-    const {register, handleSubmit, formState: {errors}} = useForm<AuthFormData>({
+    const {register, handleSubmit, setError, formState: {errors}} = useForm<AuthFormData>({
         resolver: zodResolver(currentSchema),
         mode: "onTouched"
     });
 
     const onSubmit = async (data: AuthFormData) => {
         try {
-            if (mode === 'login') {
-                login();
-                navigate("/dashboard");
-            } else {
-                console.log("Sending register to API:", data);
+            if (mode === 'register') {
+                await axiosClient.post("/auth/register", data);
             }
+
+            await axiosClient.post("/auth/login", data);
+            await checkSession();
+
+            navigate("/dashboard");
         } catch (error) {
-            console.error("Authorization error:", error);
+            let errorMessage = "Unexpected error occurred!";
+
+            if (isAxiosError(error) && error.response) {
+                if (mode === 'login' && error.response.status === 400) {
+                    errorMessage = "Invalid username or password!";
+                } else if (mode === 'register' && error.response.status === 409) {
+                    errorMessage = "User with this username already exists!";
+                }
+            }
+
+            setError("root", {
+                type: "server",
+                message: errorMessage
+            });
         }
     };
 
@@ -48,6 +65,12 @@ const AuthPage = ({ mode }: AuthPageProps) => {
                     <InputField id={'username'} label={'Username'} placeholder={'Enter username...'} register={register('username')} error={errors.username?.message}/>
 
                     <InputField id={'password'} label={'Password'} placeholder={'Enter password...'} type={'password'} register={register('password')} error={errors.password?.message}/>
+
+                    {errors.root && (
+                        <div className="text-red-500 text-sm font-semibold text-center mt-2">
+                            {errors.root.message}
+                        </div>
+                    )}
 
                     <div className={`flex flex-col items-center`}>
                         <button type="submit" className={`text-center w-3/4 mt-6 text-md font-bold text-white bg-sky-400 hover:bg-sky-500 hover:scale-105 transition px-4 py-2 rounded-xl cursor-pointer`}>
