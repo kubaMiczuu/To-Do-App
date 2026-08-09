@@ -50,10 +50,17 @@ class UserController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteUser(Principal principal) {
+    public ResponseEntity<Void> deleteUser(Principal principal, HttpServletResponse response) {
         String username = principal.getName();
 
         userService.deleteUser(username);
+
+        Cookie cookie = new Cookie("jwt_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

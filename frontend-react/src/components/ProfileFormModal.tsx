@@ -1,20 +1,19 @@
 import {useForm} from "react-hook-form";
 import type {ProfileSchema} from "../schemas/profileSchema.ts";
-import {profileSchema} from "../schemas/profileSchema.ts";
+import {profileEditSchema, profilePasswordSchema} from "../schemas/profileSchema.ts";
 import {zodResolver} from "@hookform/resolvers/zod";
 import InputField from "./common/InputField.tsx";
 import ModalFooter from "./common/ModalFooter.tsx";
 import Modal from "./common/Modal.tsx";
+import {axiosClient} from "../api/axiosClient.ts";
+import {useContext} from "react";
+import {AuthContext} from "../context/AuthContext.tsx";
+import {isAxiosError} from "axios";
 
 interface ProfileFormModalProps {
     mode: "EDIT" | "PASSWORD";
-    initialData?: UserData | null;
+    username?: string;
     onCancel: () => void;
-}
-
-export interface UserData {
-    id?: number;
-    username: string;
 }
 
 const modeConfig = {
@@ -32,24 +31,52 @@ const modeConfig = {
     }
 }
 
-const ProfileFormModal = ({mode, initialData, onCancel}: ProfileFormModalProps) => {
-    const config = modeConfig[mode];
+const ProfileFormModal = ({mode, username, onCancel}: ProfileFormModalProps) => {
+    const {checkSession} = useContext(AuthContext);
 
-    const {register, handleSubmit, formState: {errors}} = useForm<ProfileSchema>({
-        resolver: zodResolver(profileSchema),
+    const config = modeConfig[mode];
+    const currentSchema = mode === "EDIT" ? profileEditSchema : profilePasswordSchema;
+
+    const {register, handleSubmit, setError, formState: {errors}} = useForm<ProfileSchema>({
+        resolver: zodResolver(currentSchema) as any,
         mode: "onTouched",
         defaultValues: {
-            username: initialData?.username || ""
+            username: username || ""
         }
     });
 
-    const handleFormSubmit = () => {
+    const onSubmit = async (data:ProfileSchema) => {
+        try {
+            if (mode === "EDIT") {
+                await axiosClient.put("/users/me", { username: data.username });
+            } else {
+                await axiosClient.put("/users/me/password", { oldPassword: data.oldPassword, newPassword: data.newPassword });
+            }
 
+            onCancel();
+            await checkSession();
+        } catch (error) {
+            console.error(error);
+            let errorMessage = "Unexpected error occurred.";
+
+            if (isAxiosError(error) && error.response) {
+                if (mode === 'EDIT' && error.response.status === 409) {
+                    errorMessage = "User with this username already exists!";
+                } else if (mode === 'PASSWORD' && error.response.status === 400) {
+                    errorMessage = "Invalid old password!";
+                }
+            }
+
+            setError("root", {
+                type: "server",
+                message: errorMessage
+            });
+        }
     }
 
     return (
         <Modal onCancel={onCancel}>
-            <form onSubmit={handleSubmit(handleFormSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]`">
+            <form onSubmit={handleSubmit(onSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]`">
 
                 <h1 className={`text-center text-3xl font-bold text-slate-800`}>
                     {config.headerText}
@@ -70,6 +97,12 @@ const ProfileFormModal = ({mode, initialData, onCancel}: ProfileFormModalProps) 
                     )}
 
                 </div>
+
+                {errors.root && (
+                    <div className="text-red-500 text-sm font-semibold mt-2">
+                        {errors.root.message}
+                    </div>
+                )}
 
                 <ModalFooter onCancel={onCancel} submitText={config.buttonText} />
 

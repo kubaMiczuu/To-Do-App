@@ -1,20 +1,34 @@
 import ProfileInformation from "../components/ProfileInformation.tsx";
 import ProfileStatCard from "../components/ProfileStatCard.tsx";
-import {useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import ProfileFormModal from "../components/ProfileFormModal.tsx";
 import DeleteConfirmOverlay from "../components/common/DeleteConfirmOverlay.tsx";
 import Modal from "../components/common/Modal.tsx";
+import {axiosClient} from "../api/axiosClient.ts";
+import {AuthContext} from "../context/AuthContext.tsx";
 
 const ProfilePage = () => {
 
     const [modalMode, setModalMode] = useState<null | "EDIT" | "PASSWORD">(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [username, setUsername] = useState<string>("");
 
-    const userData = {id: 1, username:"Jakub Miczek"};
+    const {checkSession} = useContext(AuthContext)
 
-    const handleDeleteProfile = () => {
+    const handleDeleteProfile = async () => {
+        await axiosClient.delete("/users/me").then(() => {
+            setShowDeleteConfirm(false);
+        })
 
+        await checkSession();
     }
+
+    useEffect(() => {
+        axiosClient.get("/users/me")
+        .then(response =>{
+            setUsername(response.data.username)
+        } );
+    }, [])
 
     return (
 
@@ -22,7 +36,7 @@ const ProfilePage = () => {
 
             <div className="flex flex-col w-full max-w-4xl min-h-[calc(100vh-128px)] bg-white border border-slate-100 shadow-sm shadow-slate-200/40 rounded-2xl p-6 gap-4">
 
-                <ProfileInformation username={userData.username} />
+                <ProfileInformation username={username} />
 
                 <div className={`h-2/7 grid grid-cols-2 md:grid-cols-4 gap-6 p-4`}>
 
@@ -58,7 +72,7 @@ const ProfilePage = () => {
             </div>
 
             {modalMode !== null && (
-                <ProfileFormModal mode={modalMode} initialData={userData} onCancel={() => setModalMode(null)} />
+                <ProfileFormModal mode={modalMode} username={username} onCancel={() => setModalMode(null)} />
             )}
 
             {showDeleteConfirm && (

@@ -42,19 +42,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (authorizationToken != null) {
-            String username = jwtService.extractUsername(authorizationToken);
+            try {
+                String username = jwtService.extractUsername(authorizationToken);
 
-            if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails user = userDetailsService.loadUserByUsername(username);
+                if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails user = userDetailsService.loadUserByUsername(username);
 
-                if(jwtService.validateToken(authorizationToken, user)) {
-                    SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
-                    );
+                    if(jwtService.validateToken(authorizationToken, user)) {
+                        SecurityContextHolder.getContext().setAuthentication(
+                                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
+                        );
+                    }
                 }
+            } catch (Exception e) {
+                System.out.println("Invalid JWT or deleted user: " + e.getMessage());
             }
-
-
         }
 
         filterChain.doFilter(request, response);
