@@ -3,6 +3,7 @@ import {useEffect, useState} from "react"
 import TaskFormModal, {type TaskData} from "../components/TaskFormModal.tsx";
 import DashboardToolbar from "../components/DashboardToolbar.tsx";
 import {axiosClient} from "../api/axiosClient.ts";
+import Pagination from "../components/Pagination.tsx";
 
 const Dashboard = () => {
 
@@ -64,8 +65,8 @@ const Dashboard = () => {
                     ))}
                 </ul>
 
-                <div className="mt-4 border-2 border-dashed border-slate-300 rounded-xl p-4 flex items-center justify-center text-slate-400">
-                    Future pagination
+                <div className="mt-4 p-4 flex items-center justify-center text-slate-400">
+                    <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
                 </div>
 
             </div>
