@@ -1,21 +1,17 @@
 import TaskCard from "../components/TaskCard.tsx"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import TaskFormModal, {type TaskData} from "../components/TaskFormModal.tsx";
 import DashboardToolbar from "../components/DashboardToolbar.tsx";
+import {axiosClient} from "../api/axiosClient.ts";
 
 const Dashboard = () => {
 
     const [modalMode, setModalMode] = useState<null | "ADD" | "UPDATE">(null);
     const [selectedTask, setSelectedTask] = useState<TaskData | null>(null);
-
-    const tasks: TaskData[] = [
-        {id: 1, title: "Task Title", description: "Task Description", status:"TODO"},
-        {id: 2, title: "Task Title", description: "Task Description", status:"IN_PROGRESS"},
-        {id: 3, title: "Task Title", description: "Task Description", status:"DONE"},
-        {id: 4, title: "Task Title", description: "Task Description", status:"TODO"},
-        {id: 5, title: "Task Title", description: "Task Description", status:"IN_PROGRESS"},
-        {id: 6, title: "Task Title", description: "Task Description", status:"DONE"},
-    ]
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+    const [tasks, setTasks] = useState<TaskData[]>([]);
 
     const handleUpdateClick = (task: TaskData) => {
         setSelectedTask(task);
@@ -40,6 +36,19 @@ const Dashboard = () => {
 
     }
 
+    useEffect(() => {
+        axiosClient.get("/tasks", {
+            params: {
+                page: currentPage,
+                size: 6
+            }
+        })
+            .then((response) => {
+                setTasks(response.data.content);
+                setTotalPages(response.data.totalPages);
+            })
+    }, [currentPage, refreshTrigger]);
+
     return (
         <div className="flex justify-between px-4 cursor-default">
 
@@ -62,7 +71,7 @@ const Dashboard = () => {
             </div>
 
             {modalMode !== null && (
-                <TaskFormModal mode={modalMode} initialData={selectedTask} onCancel={() => handleCancelClick()} />
+                <TaskFormModal mode={modalMode} initialData={selectedTask} onCancel={() => handleCancelClick()} onSuccess={() => setRefreshTrigger(prev => prev+1)} />
             )}
 
         </div>

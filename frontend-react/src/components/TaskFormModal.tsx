@@ -9,18 +9,20 @@ import TextAreaField from "./common/TextAreaField.tsx";
 import DeleteConfirmOverlay from "./common/DeleteConfirmOverlay.tsx";
 import TaskStatusChangeButton from "./TaskStatusChangeButton.tsx";
 import ModalFooter from "./common/ModalFooter.tsx";
+import {axiosClient} from "../api/axiosClient.ts";
 
 interface TaskFormModalProps {
     mode: "UPDATE" | "ADD";
     initialData?: TaskData | null;
     onCancel: () => void;
+    onSuccess: () => void;
 }
 
 export interface TaskData {
     id?: number;
     status: "TODO" | "IN_PROGRESS" | "DONE";
     title: string;
-    description: string;
+    description?: string;
 }
 
 const modeConfig = {
@@ -38,7 +40,7 @@ const modeConfig = {
     }
 }
 
-const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
+const TaskFormModal = ({mode, initialData, onCancel, onSuccess}:TaskFormModalProps) => {
 
     const config = modeConfig[mode];
 
@@ -59,18 +61,27 @@ const TaskFormModal = ({mode, initialData, onCancel}:TaskFormModalProps) => {
         name: 'status'
     })
 
-    const handleFormSubmit = () => {
+    const onSubmit = async (data: TaskData) => {
+        if(mode === "ADD") {
+            await axiosClient.post("/tasks", {title: data.title, description: data.description})
+        } else if(mode === "UPDATE") {
+            await axiosClient.put("/tasks", {taskId: initialData?.id, title: data.title, description: data.description, status: data.status})
+        }
 
+        onSuccess();
+        onCancel();
     }
 
     const handleDeleteTask = async () => {
-
+        await axiosClient.delete("/tasks/"+initialData?.id);
+        onSuccess();
+        onCancel();
     }
 
     return (
         <Modal onCancel={() => onCancel()}>
 
-            <form onSubmit={handleSubmit(handleFormSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]`">
+            <form onSubmit={handleSubmit(onSubmit)} onClick={(e) => e.stopPropagation()} className="flex flex-col w-full min-h-[calc(100vh-128px)]`">
 
                 <h1 className={`text-center text-3xl font-bold text-slate-800`}>
                     {config.headerText}

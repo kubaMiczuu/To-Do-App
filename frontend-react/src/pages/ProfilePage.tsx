@@ -13,6 +13,11 @@ const ProfilePage = () => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [username, setUsername] = useState<string>("");
 
+    const [overallTasks, setOverallTasks] = useState<number>(0);
+    const [todoTasks, setTodoTasks] = useState<number>(0);
+    const [inProgressTasks, setInProgressTasks] = useState<number>(0);
+    const [doneTasks, setDoneTasks] = useState<number>(0);
+
     const {checkSession} = useContext(AuthContext)
 
     const handleDeleteProfile = async () => {
@@ -25,9 +30,29 @@ const ProfilePage = () => {
 
     useEffect(() => {
         axiosClient.get("/users/me")
-        .then(response =>{
-            setUsername(response.data.username)
-        } );
+            .then(response =>{
+                setUsername(response.data.username)
+            });
+
+        axiosClient.get("/tasks")
+            .then((response) => {
+                setOverallTasks(response.data.totalElements);
+            })
+        
+        axiosClient.get("/tasks/status/TODO")
+            .then((response) => {
+                setTodoTasks(response.data.totalElements);
+            })
+
+        axiosClient.get("/tasks/status/IN_PROGRESS")
+            .then((response) => {
+                setInProgressTasks(response.data.totalElements);
+            })
+
+        axiosClient.get("/tasks/status/DONE")
+            .then((response) => {
+                setDoneTasks(response.data.totalElements);
+            })
     }, [])
 
     return (
@@ -40,13 +65,13 @@ const ProfilePage = () => {
 
                 <div className={`h-2/7 grid grid-cols-2 md:grid-cols-4 gap-6 p-4`}>
 
-                    <ProfileStatCard status={"OVERALL"} value={21} />
+                    <ProfileStatCard status={"OVERALL"} value={overallTasks} />
 
-                    <ProfileStatCard status={"TODO"} value={15} />
+                    <ProfileStatCard status={"TODO"} value={todoTasks} />
 
-                    <ProfileStatCard status={"IN_PROGRESS"} value={4} />
+                    <ProfileStatCard status={"IN_PROGRESS"} value={inProgressTasks} />
 
-                    <ProfileStatCard status={"DONE"} value={2} />
+                    <ProfileStatCard status={"DONE"} value={doneTasks} />
 
                 </div>
 

@@ -87,7 +87,7 @@ public class TaskServiceTest {
         task.setStatus(TaskStatus.TODO);
         task.setUser(user);
 
-        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(1L, "task1", "test task1", TaskStatus.DONE, "username");
+        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(1L, "task1", "test task1", TaskStatus.DONE);
         String currentUsername = "username";
 
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
@@ -103,7 +103,7 @@ public class TaskServiceTest {
 
     @Test
     void shouldThrowTaskDoesNotExistExceptionWhenUpdatingTask() {
-        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(1L, "task1", "test task1", TaskStatus.DONE, "user");
+        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(1L, "task1", "test task1", TaskStatus.DONE);
 
         when(taskRepository.findById(1L)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> taskService.updateTask(taskUpdateRequest, "user"))
@@ -124,7 +124,7 @@ public class TaskServiceTest {
         task.setStatus(TaskStatus.TODO);
         task.setUser(user);
 
-        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(1L, "task1", "test task1", TaskStatus.DONE, "user");
+        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(1L, "task1", "test task1", TaskStatus.DONE);
         String currentUsername = "username";
 
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));

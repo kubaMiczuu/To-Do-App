@@ -38,7 +38,7 @@ const TaskCard = ({task}:TaskCardProps) => {
             </h1>
 
             <p className={`mt-4 line-clamp-4`}>
-                {task.description} A long description on whatever this task does with solid explanation and long long things to read just to fill the whole card place just to test
+                {task.description}
             </p>
 
         </article>
