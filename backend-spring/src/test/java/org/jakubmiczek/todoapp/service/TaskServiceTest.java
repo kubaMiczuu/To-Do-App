@@ -1,7 +1,6 @@
 package org.jakubmiczek.todoapp.service;
 
 import org.jakubmiczek.todoapp.controller.dto.TaskRequest;
-import org.jakubmiczek.todoapp.controller.dto.TaskResponse;
 import org.jakubmiczek.todoapp.controller.dto.TaskUpdateRequest;
 import org.jakubmiczek.todoapp.entity.Task;
 import org.jakubmiczek.todoapp.entity.TaskStatus;
@@ -17,13 +16,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
+import org.jakubmiczek.todoapp.controller.dto.TaskResponse;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -181,61 +181,88 @@ public class TaskServiceTest {
     }
 
     @Test
-    void shouldReturnTasksByUser() {
+    void shouldReturnTasksByUserAndStatusAndTitle() {
         User user = new User();
         user.setUserId(1L);
         user.setUsername("user");
-        user.setPassword("password");
 
         Task task1 = new Task();
         task1.setTaskId(1L);
-        task1.setTitle("task");
-        task1.setDescription("test task");
+        task1.setTitle("hello world task");
         task1.setStatus(TaskStatus.TODO);
         task1.setUser(user);
-
-        Task task2 = new Task();
-        task2.setTaskId(2L);
-        task2.setTitle("task");
-        task2.setDescription("test task");
-        task2.setStatus(TaskStatus.TODO);
 
         Pageable pageable = PageRequest.of(0, 1);
         Page<Task> pagedTasks = new PageImpl<>(List.of(task1), pageable, 1);
 
-        when(taskRepository.findByUser_Username("user", pageable)).thenReturn(pagedTasks);
-        Page<TaskResponse> userTasks = taskService.getTaskByUsername("user", pageable);
+        when(taskRepository.findByUser_UsernameAndStatusAndTitleContainingIgnoreCase("user", TaskStatus.TODO, "world", pageable)).thenReturn(pagedTasks);
+        Page<TaskResponse> userTasks = taskService.getTasks("user", TaskStatus.TODO, "world", pageable);
+
+        assertThat(userTasks.getContent().size()).isEqualTo(1);
+        assertThat(userTasks.getContent().getFirst().title()).isEqualTo("hello world task");
+    }
+
+    @Test
+    void shouldReturnTasksByUserAndStatus() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("user");
+
+        Task task1 = new Task();
+        task1.setTaskId(1L);
+        task1.setTitle("task");
+        task1.setStatus(TaskStatus.TODO);
+        task1.setUser(user);
+
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Task> pagedTasks = new PageImpl<>(List.of(task1), pageable, 1);
+
+        when(taskRepository.findByUser_UsernameAndStatus("user", TaskStatus.TODO, pageable)).thenReturn(pagedTasks);
+        Page<TaskResponse> userTasks = taskService.getTasks("user", TaskStatus.TODO, null, pageable);
 
         assertThat(userTasks.getContent().size()).isEqualTo(1);
         assertThat(userTasks.getContent().getFirst().title()).isEqualTo("task");
     }
 
     @Test
-    void shouldReturnTaskByUserAndStatus() {
+    void shouldReturnTasksByUserAndTitle() {
         User user = new User();
         user.setUserId(1L);
         user.setUsername("user");
-        user.setPassword("password");
 
         Task task1 = new Task();
         task1.setTaskId(1L);
-        task1.setTitle("task");
-        task1.setDescription("test task");
+        task1.setTitle("hello world task");
         task1.setStatus(TaskStatus.TODO);
         task1.setUser(user);
-
-        Task task2 = new Task();
-        task2.setTaskId(2L);
-        task2.setTitle("task");
-        task2.setDescription("test task");
-        task2.setStatus(TaskStatus.DONE);
-        task2.setUser(user);
 
         Pageable pageable = PageRequest.of(0, 1);
         Page<Task> pagedTasks = new PageImpl<>(List.of(task1), pageable, 1);
 
-        when(taskRepository.findByUser_UsernameAndStatus("user", TaskStatus.DONE, pageable)).thenReturn(pagedTasks);
-        Page<TaskResponse> userTasks = taskService.getTasksByStatusForUser("user", TaskStatus.DONE, pageable);
+        when(taskRepository.findByUser_UsernameAndTitleContainingIgnoreCase("user", "world", pageable)).thenReturn(pagedTasks);
+        Page<TaskResponse> userTasks = taskService.getTasks("user", null, "world", pageable);
+
+        assertThat(userTasks.getContent().size()).isEqualTo(1);
+        assertThat(userTasks.getContent().getFirst().title()).isEqualTo("hello world task");
+    }
+
+    @Test
+    void shouldReturnAllTasksByUser() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("user");
+
+        Task task1 = new Task();
+        task1.setTaskId(1L);
+        task1.setTitle("task");
+        task1.setStatus(TaskStatus.TODO);
+        task1.setUser(user);
+
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Task> pagedTasks = new PageImpl<>(List.of(task1), pageable, 1);
+
+        when(taskRepository.findByUser_Username("user", pageable)).thenReturn(pagedTasks);
+        Page<TaskResponse> userTasks = taskService.getTasks("user", null, "", pageable);
 
         assertThat(userTasks.getContent().size()).isEqualTo(1);
         assertThat(userTasks.getContent().getFirst().title()).isEqualTo("task");

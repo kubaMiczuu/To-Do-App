@@ -61,14 +61,19 @@ public class TaskService {
 
         taskRepository.delete(task);
     }
+    public Page<TaskResponse> getTasks(String username, TaskStatus taskStatus, String title, Pageable pageable) {
+        Page<Task> desiredTasks;
 
-    public Page<TaskResponse> getTaskByUsername(String username, Pageable  pageable) {
-        Page<Task> desiredTasks = taskRepository.findByUser_Username(username, pageable);
-        return mapTaskToTaskResponse(desiredTasks);
-    }
+        if(taskStatus != null && title != null && !title.isEmpty()) {
+            desiredTasks = taskRepository.findByUser_UsernameAndStatusAndTitleContainingIgnoreCase(username, taskStatus, title, pageable);
+        } else if(taskStatus != null) {
+            desiredTasks = taskRepository.findByUser_UsernameAndStatus(username, taskStatus, pageable);
+        } else if(title != null && !title.isEmpty()) {
+            desiredTasks = taskRepository.findByUser_UsernameAndTitleContainingIgnoreCase(username, title, pageable);
+        } else {
+            desiredTasks = taskRepository.findByUser_Username(username, pageable);
+        }
 
-    public Page<TaskResponse> getTasksByStatusForUser(String username, TaskStatus taskStatus, Pageable pageable) {
-        Page<Task> desiredTasks = taskRepository.findByUser_UsernameAndStatus(username, taskStatus, pageable);
         return mapTaskToTaskResponse(desiredTasks);
     }
 

@@ -45,12 +45,12 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<TaskResponse>> getTasksByAccount(Principal principal, @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(taskService.getTaskByUsername(principal.getName(), pageable));
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<Page<TaskResponse>> getTasksByAccountAndStatus(@PathVariable TaskStatus status, Principal principal, @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(taskService.getTasksByStatusForUser(principal.getName(), status, pageable));
+    public ResponseEntity<Page<TaskResponse>> getTasks(
+            @RequestParam (required = false) TaskStatus status,
+            @RequestParam(required = false) String title,
+            Principal principal,
+            @PageableDefault(sort = "taskId", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(taskService.getTasks(principal.getName(), status, title, pageable));
     }
 }

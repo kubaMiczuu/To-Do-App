@@ -39,17 +39,29 @@ const ProfilePage = () => {
                 setOverallTasks(response.data.totalElements);
             })
         
-        axiosClient.get("/tasks/status/TODO")
+        axiosClient.get("/tasks", {
+            params: {
+                status: "TODO"
+            }
+        })
             .then((response) => {
                 setTodoTasks(response.data.totalElements);
             })
 
-        axiosClient.get("/tasks/status/IN_PROGRESS")
+        axiosClient.get("/tasks", {
+            params: {
+                status: "IN_PROGRESS"
+            }
+        })
             .then((response) => {
                 setInProgressTasks(response.data.totalElements);
             })
 
-        axiosClient.get("/tasks/status/DONE")
+        axiosClient.get("/tasks", {
+            params: {
+                status: "DONE"
+            }
+        })
             .then((response) => {
                 setDoneTasks(response.data.totalElements);
             })

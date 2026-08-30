@@ -1,10 +1,12 @@
 interface DashboardToolbarProps {
+    currentQuery: string;
+    currentFilter: "ALL" | "TODO" | "IN_PROGRESS" | "DONE";
     onAddClick: () => void;
-    onSearchChange: () => void;
-    onFilterChange: () => void;
+    onSearchChange: (newQuery:string) => void;
+    onFilterChange: (newStatus:"ALL" | "TODO" | "IN_PROGRESS" | "DONE") => void;
 }
 
-const DashboardToolbar = ({onAddClick, onSearchChange, onFilterChange}: DashboardToolbarProps) => {
+const DashboardToolbar = ({currentQuery, currentFilter, onAddClick, onSearchChange, onFilterChange}: DashboardToolbarProps) => {
     return (
         <div className="flex flex-col md:flex-row justify-center mb-6 gap-4 p-4">
 
@@ -12,24 +14,24 @@ const DashboardToolbar = ({onAddClick, onSearchChange, onFilterChange}: Dashboar
                 Click me to add new task!
             </button>
 
-            <input onChange={() => {onSearchChange()}} placeholder={'Search for tasks...'} className={`border border-slate-200 rounded-lg p-2 w-full md:w-1/3 text-slate-500 focus:outline-none`}/>
+            <input value={currentQuery} onChange={(e) => {onSearchChange(e.target.value)}} placeholder={'Search for tasks...'} className={`border border-slate-200 rounded-lg p-2 w-full md:w-1/3 text-slate-500 focus:outline-none`}/>
 
-            <select onChange={onFilterChange} defaultValue={""} className={`border border-slate-200 rounded-lg p-2 w-full md:w-1/3 text-slate-500 transition cursor-pointer focus:outline-none focus:ring-sky-300`}>
+            <select value={currentFilter} onChange={(e) => onFilterChange(e.target.value as "ALL" | "TODO" | "IN_PROGRESS" | "DONE")} className={`border border-slate-200 rounded-lg p-2 w-full md:w-1/3 text-slate-500 transition cursor-pointer focus:outline-none focus:ring-sky-300`}>
 
-                <option value="">
+                <option value="ALL">
                     All
                 </option>
 
                 <option value={'TODO'}>
-                    status: TODO
+                    TODO
                 </option>
 
                 <option value={'IN_PROGRESS'}>
-                    status: IN PROGRESS
+                    IN PROGRESS
                 </option>
 
                 <option value={'DONE'}>
-                    status: DONE
+                    DONE
                 </option>
             </select>
 
