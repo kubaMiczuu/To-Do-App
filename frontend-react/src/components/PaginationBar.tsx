@@ -1,4 +1,4 @@
-import {getPaginationRange} from "../services/getPaginationRange.ts";
+import {getPaginationRange} from "../utils/getPaginationRange.ts";
 import PaginationCard from "./PaginationCard.tsx";
 
 interface paginationBarProps {

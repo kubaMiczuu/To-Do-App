@@ -37,7 +37,7 @@ const TaskCard = ({task}:TaskCardProps) => {
                 {task.title}
             </h1>
 
-            <p className={`mt-4 line-clamp-4`}>
+            <p className={`mt-4 line-clamp-4 whitespace-pre-wrap`}>
                 {task.description}
             </p>
 
