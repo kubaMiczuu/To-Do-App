@@ -15,7 +15,7 @@ function App() {
 
                   <span onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}
                         className={`font-bold text-2xl text-sky-400 tracking-tight hover:text-sky-500 hover:scale-105 transition cursor-pointer`}
-                  >To-Do App</span>
+                  >NodeNotes</span>
 
                   {!isAuthenticated ? (
                       <div className={`flex items-center gap-4`}>

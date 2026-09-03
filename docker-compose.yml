@@ -19,7 +19,7 @@ services:
     build:
       context: ./backend-spring
       dockerfile: Dockerfile
-    image: to-do-app-spring
+    image: nodenotes-spring
     ports:
       - "8080:8080"
     depends_on:
@@ -38,7 +38,7 @@ services:
     build:
       context: ./frontend-react
       dockerfile: Dockerfile
-    image: to-do-app-react
+    image: nodenotes-react
     ports:
       - "5173:5173"
     depends_on:

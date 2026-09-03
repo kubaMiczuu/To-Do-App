@@ -69,23 +69,43 @@ Running the entire application (Database + Backend + Frontend) requires absolute
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/todo-app.git
-   cd todo-app
+   git clone https://github.com/your-username/nodenotes.git
+   cd nodenotes
    ```
 
-2. **Run the stack with Docker Compose**
+2. **Set up environment variables**
+   Copy the example environment file and rename it to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   > **Note:** For local development, you can safely use the default values provided in `.env.example`. However, for production deployment, it is strongly recommended to change the database credentials and generate a secure JWT secret.
+
+3. **Run the stack with Docker Compose**
    ```bash
    docker-compose up -d --build
    ```
 
-3. **Access the application**
+4. **Access the application**
    - **Frontend:** Open your browser and go to `http://localhost:5173`
    - **Backend API:** Available at `http://localhost:8080/api`
+   - **Swagger UI (API Docs):** Available at `http://localhost:8080/swagger-ui.html`
    - **Database:** PostgreSQL runs on port `5433` locally.
 
 To stop the application, run:
 ```bash
 docker-compose down
 ```
+
+### 💻 Local Development (Editing Code)
+If you intend to modify the frontend code, you must install the Node dependencies locally so your IDE (like VS Code or IntelliJ) can resolve TypeScript types and ESLint rules, otherwise you will see red errors.
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend-react
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
 ---

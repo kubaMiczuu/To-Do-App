@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.jakubmiczek</groupId>
-    <artifactId>To-Do-App</artifactId>
+    <artifactId>backend-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>To-Do App</name>
     <description>To-Do App</description>
